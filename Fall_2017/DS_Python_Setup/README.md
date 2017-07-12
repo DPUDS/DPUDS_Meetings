@@ -1,1 +1,1 @@
-# Set up a Data Science environment for Python
+# Set up a Data Science Environment for Python
