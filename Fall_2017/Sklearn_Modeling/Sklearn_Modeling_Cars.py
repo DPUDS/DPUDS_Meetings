@@ -67,9 +67,6 @@ from matplotlib import style
 #Style that will be used for the graph that shows model comparison
 style.use('ggplot')
 
-#Dictionary to translate numbers into user friendly strings for overall car rating
-target_dict = {1:'Unacceptable',2:'Acceptable',3:'Good',4:'Very_Good'}
-
 #Change this to the working directory of your dataset
 os.chdir('/Users/Sam/Documents/Python/DPUDS/DPUDS_Meetings/Fall_2017/Sklearn_Modeling')
 
@@ -277,6 +274,8 @@ def RF_train_test_model(X_train, X_test, y_train, y_test):
 
 	return accuracy
 
+
+
 '''
 This is the sklearn Logistic Regression model. By passing 
 in the train and test data, we can train the model and then test it. 
@@ -316,11 +315,9 @@ all six.
 '''
 def gather_samples(models,num_samples,test_ratio,data_features,data_labels):
 	results_dict = {}
-	model_tags = []
 	for model in models:
 		res_list = []
 		model_tag = model.__name__.rsplit('_')[0]
-		model_tags.append(model_tag)
 		for j in range(num_samples):
 			X_train, X_test, y_train, y_test = train_test_split(data_features, data_labels, test_size = test_ratio)
 			accuracy = model(X_train,X_test,y_train,y_test)
@@ -358,13 +355,16 @@ def visualize_results(results_df):
 ###########################################
 
 #Import data using pandas
-data = pd.read_csv('Car_Ratings.csv', names = ['buy_price', 
+data = pd.read_csv('Car_Ratings.csv', names = [    'buy_price', 
 		   										   'maintanence_price',
 		   										   'num_people',
 		   										   'num_doors',
 		   										   'trunk_size',
 		   										   'safety_rating',
 		   										   'overall_rating'])
+
+#Dictionary to translate numbers into user friendly strings for overall car rating
+target_dict = {1:'Unacceptable',2:'Acceptable',3:'Good',4:'Very_Good'}
 
 '''
 The main method runs the model, taking in the test ratio you want, 
