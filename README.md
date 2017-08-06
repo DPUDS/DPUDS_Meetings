@@ -18,4 +18,4 @@ For everything. Confused about a meeting time or location? Post your question in
 
 ## We Use [Trello](https://trello.com) for Project Management
 
-[Trello] is a task management tool often used by software developers in an Agile Framework. This allows everyone to see who is working on what and contribute more effectively to DPU DS activities. If you did not get an invite to our Trello team, and would like one, please email us at **dpudatascience@gmail.com**.
+Trello is a task management tool often used by software developers in an Agile Framework. This allows everyone to see who is working on what and contribute more effectively to DPU DS activities. If you did not get an invite to our Trello team, and would like one, please email us at **dpudatascience@gmail.com**.
