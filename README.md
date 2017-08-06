@@ -4,7 +4,7 @@ The following code is used for DPU DS meetings and tutorials. Here are some note
 
 ## You Can Find Everything on Our [Website](https://dpudatascience.wixsite.com/dpuds) 
 
-If you are ever in doubt, visit our website [here](https://dpudatascience.wixsite.com/dpuds). This will give you an overview of what we do as well as provide access to all of our resources and projects. Most importantly, our **`Calendar`** page will give an overview of events happening in the following weeks.
+If you are ever in doubt, visit our website. This will give you an overview of what we do as well as provide access to all of our resources and projects. Most importantly, our **`Calendar`** page will give an overview of events happening in the following weeks.
 
 
 ## We Use [GitHub](https://github.com) for Source Control
