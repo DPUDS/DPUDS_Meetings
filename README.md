@@ -14,8 +14,8 @@ As you might have already guessed, we track our progress and our changes with Gi
 
 ## We Communicate Over Slack
 
-For everything. Confused about a meeting time or location? Post your question in our **`#questions`** channel. Finished a project that you want to commit to the master branch? Ask us to merge your pull request via our **`#deploys`** channel. Being a member of our Slack Team is crucial for getting the latest news about our club. If you did not receive a link to join but would like one, please email us at **dpudatascience@gmail.com**.
+For everything. Confused about a meeting time or location? Post your question in our **`#questions`** channel. Finished a project that you want to commit to the master branch? Ask us to merge your pull request via our **`#deploys`** channel. Being a member of our Slack Team is crucial for getting the latest DPU DS news. If you did not receive a link to join but would like one, please email us at **dpudatascience@gmail.com**.
 
 ## We Use Trello for Project Management
 
-Trello is a task management tool often used by software developers in an Agile Framework. This allows everyone to see who is working on what, and contribute more effectively to DPU DS activities. If you did not get an invite to our Trello team, and would like one, please email us at **dpudatascience@gmail.com**.
+Trello is a task management tool often used by software developers in an Agile Framework. This allows everyone to see who is working on what and contribute more effectively to DPU DS activities. If you did not get an invite to our Trello team, and would like one, please email us at **dpudatascience@gmail.com**.
