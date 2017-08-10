@@ -29,10 +29,7 @@ import os
 #
 ###########################################
 
-#Change this to your current working directory of choice
-os.chdir('/Users/Sam/Documents/Python/DPUDS/DPUDS_Meetings/Fall_2017/Webscrape_Stock_Data')
-
-#URl ductionary of all sites that could be web-scraped
+#URl dictionary of sites that could be web-scraped
 URL_dict = {'yahoo': 'https://finance.yahoo.com/quote/STOCK?p=STOCK',
 			'NASDAQ': 'http://www.nasdaq.com/symbol/STOCK',
 			'bloomberg': 'https://www.bloomberg.com/quote/STOCK:US',
@@ -64,19 +61,31 @@ def yahoo_minute_ohlcv_data(ticker):
 	#Opens the URL link created above
 	page = req.urlopen(link, context = ssl_context)
 
-	#Extracts all html data from the page opened above
-	soup = BeautifulSoup(page, "html.parser")
-
-	#Digging through html to find correct tags (classes) for stock price
-	price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').find(text = True)
-
-	#Refining down html tags for volume [(6th) row of the vol_table, within vol_class]
-	vol_class = soup.find('div', class_='D(ib) W(1/2) Bxz(bb) Pend(12px) Va(t) ie-7_D(i)')
-	vol_table = vol_class.findAll('td', class_= 'Ta(end) Fw(b) Lh(14px)')
-	volume = vol_table[6].find(text = True).replace(',','')
-
 	#Returns stock price and volume as float values
-	return float(price), float(volume)
+	try:
+		#Extracts all html data from the page opened above
+		soup = BeautifulSoup(page, "html.parser")
+
+		#Digging through html to find correct tags (classes) for stock price
+		price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').find(text = True)
+
+		#Refining down html tags for volume [(6th) row of the vol_table, within vol_class]
+		vol_class = soup.find('div', class_='D(ib) W(1/2) Bxz(bb) Pend(12px) Va(t) ie-7_D(i)')
+		vol_table = vol_class.findAll('td', class_= 'Ta(end) Fw(b) Lh(14px)')
+		volume = vol_table[6].find(text = True).replace(',','')
+
+		#Returns stock data and price as float values
+		price, volume = float(price), float(volume)
+
+		return price, volume
+
+	# If stock data ill-formatted, scraping attempt is skipped
+	# Sometimes data is reported as N/A briefly as it changes
+	except Exception as e:
+			print("\nError in scraping data, current scrape attempt skipped")
+			print("Message: %s"%(e))
+			print("Re-scraping\n")
+			yahoo_minute_ohlcv_data(ticker)
 
 
 '''
@@ -149,20 +158,13 @@ def get_ohlcv_data(ticker, provider, duration):
 		while scrape_count < 5:
 
 			if dt.datetime.now() >= next_scrape:
-				try:
-					#Gets price and volume data
-					price, volume = eval(engine)
 
-					#Add price and volume data to respective lists
-					price_list.append(price)
-					vol_list.append(volume)
+				#Gets price and volume data
+				price, volume = eval(engine)
 
-				# If stock data ill-formatted, scraping attempt is skipped
-				# Sometimes data is reported as N/A briefly as it changes
-				except Exception as e:
-					print("Error in scraping data, current scrape attempt skipped")
-					print("Message: %s"%(e))
-					continue
+				#Add price and volume data to respective lists
+				price_list.append(price)
+				vol_list.append(volume)
 
 				#Amend next_scrape time to be ten seconds later (allows pause)
 				next_scrape += dt.timedelta(seconds = 10)
@@ -185,17 +187,17 @@ def get_ohlcv_data(ticker, provider, duration):
 		master_stock_data_list.append(row)
 
 		#Notify user of the added row
-		print("Row Stored")
+		print("[%s] Row Stored"%Date_time)
 
 		#Reset time parameters, counts, and temporary lists
+		scrape_count = 0
 		next_scrape += dt.timedelta(seconds = 10)
 		price_list = []
 		vol_list = []
-		count = 0
 		actual_duration += 1
 
 	#Notify user when the webscrape has finished
-	print("\nScrape Finished.\n")
+	print("\n[%s] Scrape Finished.\n"%(dt.datetime.now().strftime('%Y-%m-%d %H:%M')))
 
 	#Create a DataFrame of all the gathered stock data, and remove dummy index
 	stock_df = pd.DataFrame(master_stock_data_list, columns = ['DateTime', 'Open', 'High', 'Low', 'Close', "Avg_Volume"])
@@ -219,12 +221,9 @@ Only new addition is changing the working directory.
 '''
 def main(ticker, provider, duration):
 
+	#Change this to your current working directory of choice
 	os.chdir('/Users/Sam/Documents/Python/DPUDS/DPUDS_Meetings/Fall_2017/Webscrape_Stock_Data')
 
 	get_ohlcv_data(ticker, provider, duration)
 
-main('lnc','yahoo',1)
-
-
-
-
+#main('aapl','yahoo',5)
