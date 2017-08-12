@@ -58,26 +58,39 @@ def yahoo_minute_ohlcv_data(ticker):
 	#Creates the link needed to contact yahoo finance
 	link  = URL_dict['yahoo'].replace('STOCK',ticker.lower())
 
-	#Opens the URL link created above
-	page = req.urlopen(link, context = ssl_context)
-
 	#Returns stock price and volume as float values
 	try:
+
+		#Opens the URL link created above
+		page = req.urlopen(link, context = ssl_context)
+
 		#Extracts all html data from the page opened above
 		soup = BeautifulSoup(page, "html.parser")
 
-		#Digging through html to find correct tags (classes) for stock price
-		price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').find(text = True)
+		if soup is not None:
 
-		#Refining down html tags for volume [(6th) row of the vol_table, within vol_class]
-		vol_class = soup.find('div', class_='D(ib) W(1/2) Bxz(bb) Pend(12px) Va(t) ie-7_D(i)')
-		vol_table = vol_class.findAll('td', class_= 'Ta(end) Fw(b) Lh(14px)')
-		volume = vol_table[6].find(text = True).replace(',','')
+			#Digging through html to find correct tags (classes) for stock price
+			price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').find(text = True)
 
-		#Returns stock data and price as float values
-		price, volume = float(price), float(volume)
+			#Refining down html tags for volume [(6th) row of the vol_table, within vol_class]
+			vol_class = soup.find('div', class_='D(ib) W(1/2) Bxz(bb) Pend(12px) Va(t) ie-7_D(i)')
+			vol_table = vol_class.findAll('td', class_= 'Ta(end) Fw(b) Lh(14px)')
+			volume = vol_table[6].find(text = True).replace(',','')
 
-		return price, volume
+
+		#If price or volume comes back as a NoneType
+		if price is not None and volume is not None:
+			#Returns stock data and price as float values
+			price, volume = float(price), float(volume)
+
+			return price, volume
+
+		#If soup object returns as NoneType
+		else:
+			print("\nError in scraping data, soup object returned as NoneType")
+			print("Re-scraping\n")
+			yahoo_minute_ohlcv_data(ticker)
+
 
 	# If stock data ill-formatted, scraping attempt is skipped
 	# Sometimes data is reported as N/A briefly as it changes
@@ -143,7 +156,9 @@ def get_ohlcv_data(ticker, provider, duration):
 		if dt.datetime.now() >= start:
 			scrape_start = True
 			next_scrape = dt.datetime.strptime(dt.datetime.now().strftime('%Y-%m-%d %H:%M'), '%Y-%m-%d %H:%M')
-			print('\nScrape started at %s and will run for %s minute(s)\n'%(str(dt.datetime.now())[11:-7], duration))
+			print('\nScrape started at %s and will run for %s minute(s) until %s\n'%(str(dt.datetime.now())[11:-7], 
+																					 duration, 
+																					 (dt.datetime.now() + dt.timedelta(minutes = duration)).strftime('%Y-%m-%d %H:%M')))
 
 		#Notify the user that the scraping engine is still waiting.
 		else:
@@ -222,8 +237,8 @@ Only new addition is changing the working directory.
 def main(ticker, provider, duration):
 
 	#Change this to your current working directory of choice
-	os.chdir('/Users/Sam/Documents/Python/DPUDS/DPUDS_Meetings/Fall_2017/Webscrape_Stock_Data')
+	os.chdir('/Users/Sam/Documents/Python/DPUDS/DPUDS_Meetings/Fall_2017/Webscrape_201')
 
 	get_ohlcv_data(ticker, provider, duration)
 
-#main('aapl','yahoo',5)
+#main('vz','yahoo',100)
