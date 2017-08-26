@@ -70,12 +70,14 @@ def yahoo_minute_ohlcv_data(ticker):
 		if soup is not None:
 
 			#Digging through html to find correct tags (classes) for stock price
-			price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').find(text = True)
+			price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').findAll(text = True)
+			price = price[1]
 
 			#Refining down html tags for volume [(6th) row of the vol_table, within vol_class]
 			vol_class = soup.find('div', class_='D(ib) W(1/2) Bxz(bb) Pend(12px) Va(t) ie-7_D(i)')
 			vol_table = vol_class.findAll('td', class_= 'Ta(end) Fw(b) Lh(14px)')
-			volume = vol_table[6].find(text = True).replace(',','')
+			volume = vol_table[6].findAll(text = True)
+			volume = volume[1].replace(',','')
 
 
 		#If price or volume comes back as a NoneType
@@ -89,7 +91,9 @@ def yahoo_minute_ohlcv_data(ticker):
 		else:
 			print("\nError in scraping data, soup object returned as NoneType")
 			print("Re-scraping\n")
+			return
 			yahoo_minute_ohlcv_data(ticker)
+			
 
 
 	# If stock data ill-formatted, scraping attempt is skipped
@@ -98,7 +102,27 @@ def yahoo_minute_ohlcv_data(ticker):
 			print("\nError in scraping data, current scrape attempt skipped")
 			print("Message: %s"%(e))
 			print("Re-scraping\n")
+			return
 			yahoo_minute_ohlcv_data(ticker)
+			
+
+
+'''
+Function helper to prevent things from erroring out
+'''
+def engine_try(engine):
+	try:
+		if eval(engine) is not None:
+			#Gets price and volume data
+			price, volume = eval(engine)
+
+			return price, volume
+
+	except Exception as e:
+		print("\nError in evaluating scraping engine")
+		print("Message: %s"%e)
+		print("Re-scraping.\n")
+		engine_try(engine)
 
 
 '''
@@ -174,8 +198,7 @@ def get_ohlcv_data(ticker, provider, duration):
 
 			if dt.datetime.now() >= next_scrape:
 
-				#Gets price and volume data
-				price, volume = eval(engine)
+				price, volume = engine_try(engine)
 
 				#Add price and volume data to respective lists
 				price_list.append(price)
@@ -241,4 +264,4 @@ def main(ticker, provider, duration):
 
 	get_ohlcv_data(ticker, provider, duration)
 
-#main('vz','yahoo',100)
+main('GOOG','yahoo', 1)
