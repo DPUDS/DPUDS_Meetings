@@ -53,10 +53,10 @@ finance webpage.
 
 # ticker = any stock ticker, lower or uppercase
 '''
-def yahoo_minute_ohlcv_data(ticker):
+def bloomberg_minute_ohlcv_data(ticker):
 
 	#Creates the link needed to contact yahoo finance
-	link  = URL_dict['yahoo'].replace('STOCK',ticker.lower())
+	link  = URL_dict['bloomberg'].replace('STOCK',ticker.lower())
 
 	#Returns stock price and volume as float values
 	try:
@@ -70,14 +70,12 @@ def yahoo_minute_ohlcv_data(ticker):
 		if soup is not None:
 
 			#Digging through html to find correct tags (classes) for stock price
-			price = soup.find('span', class_= 'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)').findAll(text = True)
-			price = price[1]
+			price = soup.find('span', class_ = "priceText__1853e8a5").find(text = True)
+			price = price.replace(',','')
 
 			#Refining down html tags for volume [(6th) row of the vol_table, within vol_class]
-			vol_class = soup.find('div', class_='D(ib) W(1/2) Bxz(bb) Pend(12px) Va(t) ie-7_D(i)')
-			vol_table = vol_class.findAll('td', class_= 'Ta(end) Fw(b) Lh(14px)')
-			volume = vol_table[6].findAll(text = True)
-			volume = volume[1].replace(',','')
+			volume = soup.find('section',class_= "dataBox volume numeric").find('div',class_ = "value__b93f12ea").find(text = True)
+			volume = volume.replace(',','')
 
 
 		#If price or volume comes back as a NoneType
@@ -90,9 +88,10 @@ def yahoo_minute_ohlcv_data(ticker):
 		#If soup object returns as NoneType
 		else:
 			print("\nError in scraping data, soup object returned as NoneType")
+
+			time.sleep(1)
 			print("Re-scraping\n")
-			return
-			yahoo_minute_ohlcv_data(ticker)
+			bloomberg_minute_ohlcv_data(ticker)
 			
 
 
@@ -101,9 +100,10 @@ def yahoo_minute_ohlcv_data(ticker):
 	except Exception as e:
 			print("\nError in scraping data, current scrape attempt skipped")
 			print("Message: %s"%(e))
+
+			time.sleep(1)
 			print("Re-scraping\n")
-			return
-			yahoo_minute_ohlcv_data(ticker)
+			bloomberg_minute_ohlcv_data(ticker)
 			
 
 
@@ -121,6 +121,8 @@ def engine_try(engine):
 	except Exception as e:
 		print("\nError in evaluating scraping engine")
 		print("Message: %s"%e)
+
+		time.sleep(1)
 		print("Re-scraping.\n")
 		engine_try(engine)
 
@@ -187,6 +189,7 @@ def get_ohlcv_data(ticker, provider, duration):
 		#Notify the user that the scraping engine is still waiting.
 		else:
 			print('Scrape starting in %s seconds'%str((start - dt.datetime.now()))[5:-7])
+
 			#Pauses the sequence for 1 second
 			time.sleep(1)
 
@@ -264,4 +267,4 @@ def main(ticker, provider, duration):
 
 	get_ohlcv_data(ticker, provider, duration)
 
-main('GOOG','yahoo', 1)
+main('AMZN','bloomberg', 3)
